@@ -1,32 +1,34 @@
+---
 -
     name: Automatisacion Droplets
     hosts: localhost
     vars:
       droplets:
-        - name: centos-nyc-dockernode-controller-01
+        - name: centos-nyc-dockernode-01
           id: 1
           distro: &centos centos-8-x64
           region: nyc1
-        - name: centos-nyc-dockernode-worker-01
+        - name: centos-nyc-dockernode-02
           id: 2
           distro: *centos
           region: nyc2
-        - name: debian-nyc-dockernode-worker-02
+        - name: debian-nyc-dockernode-03
           id: 3
           distro: &debian debian-9-x64
-          region: nyc3
+          region: nyc2
+
+        
           
     connection: local
     gather_facts: False 
     tasks:
 
-      - name: Verificar SSH-KEY y CREAR si no existeen Digital Ocean
+      - name: Verificar SSH-KEY y CREAR si no existe en Digital Ocean
         digital_ocean:
           state: present
           command : ssh
           name: "ansible-agent"
-          # ssh_pub_key: "{{ lookup('file','~/.ssh/id_rsa_digitalocean.pub') }}"
-          ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHQ2hBlpC/zVI8qrM6SSjRcok9UyU/VF3CYUpiU/GK62Eh1MVI29g1husRlwPOAn4pfb7wFW6QNfiDjouzwSOA88oC0g1PxqPmYRQxu1Mdkd1+fZDs46+Sce915K5Xggejo971Ca4wQzGIed+xGd/mKifMKLeM850oF0UI6KabnzrZICzTjn/0RZG5lK3NEZeun/s96UHeAL9EcX4MGS9pb91fGjbnjiNEYqRJCNkU1xCghFSgUIMbxhKPkqmqMYv+VzFngU0S4McVUDKA1dut5s34k9qBxgn12/QEJpvT4tKBXiOObKovOcX3njJ9YzkEE7/5/pBhokZBmAYYBNtZ Digital Ocean Ansible"
+          ssh_pub_key: "{{ lookup('file','~/.ssh/id_rsa.pub') }}"
         register: ssh_result
       - debug:
           msg: "Llave Creada con exito {{ ssh_result.ssh_key.id}}"
@@ -45,5 +47,14 @@
             - '{{ ssh_result.ssh_key.id }}'
         register: do_droplet
         loop: '{{ droplets }}'
-     
-   
+
+      - debug:
+           var: do_droplet.results[0].data.droplet.name 
+
+      - name: Crear hosts file
+        copy:
+          dest: ~/Documents/EJERCICIOS CURSOS/ansible/ejercicio3/hosts
+          content: |
+              [digital_ocean_cluster]
+              {{do_droplet.results[0].data.droplet.name}} ansible_host={{do_droplet.results[0].data.ip_address}} 
+              {{do_droplet.results[1].data.droplet.name}} ansible_host={{do_droplet.results[1].data.ip_address}} 
