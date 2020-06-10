@@ -2,26 +2,13 @@
 -
     name: Automatisacion Droplets
     hosts: localhost
-    vars:
-      droplets:
-        - name: centos-nyc-dockernode-01
-          id: 1
-          distro: &centos centos-8-x64
-          region: nyc1
-        - name: centos-nyc-dockernode-02
-          id: 2
-          distro: *centos
-          region: nyc2
-        - name: debian-nyc-dockernode-03
-          id: 3
-          distro: &debian debian-9-x64
-          region: nyc2
-
-        
-          
     connection: local
     gather_facts: False 
     tasks:
+
+      - name: Leer variables para la creacion  de nodos
+        include_vars: 
+          file: ~/Documents/EJERCICIOS CURSOS/ansible/ejercicio3/nodes_digital_ocean.yml 
 
       - name: Verificar SSH-KEY y CREAR si no existe en Digital Ocean
         digital_ocean:
@@ -48,9 +35,6 @@
         register: do_droplet
         loop: '{{ droplets }}'
 
-      - debug:
-           var: do_droplet.results[0].data.droplet.name 
-
       - name: Crear hosts file
         copy:
           dest: ~/Documents/EJERCICIOS CURSOS/ansible/ejercicio3/hosts
@@ -58,3 +42,4 @@
               [digital_ocean_cluster]
               {{do_droplet.results[0].data.droplet.name}} ansible_host={{do_droplet.results[0].data.ip_address}} 
               {{do_droplet.results[1].data.droplet.name}} ansible_host={{do_droplet.results[1].data.ip_address}} 
+              {{do_droplet.results[2].data.droplet.name}} ansible_host={{do_droplet.results[2].data.ip_address}} 
