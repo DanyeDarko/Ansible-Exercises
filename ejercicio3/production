@@ -1,0 +1,4 @@
+[digital_ocean_cluster]
+centos-nyc-dockernode-01 ansible_host=104.248.226.85 
+centos-nyc-dockernode-02 ansible_host=142.93.78.38 
+debian-nyc-dockernode-03 ansible_host=142.93.71.98 
