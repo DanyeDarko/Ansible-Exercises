@@ -1,0 +1,33 @@
+tamanios: [2gb,4gb,8gb,16gb]
+OS_availables:
+  deb:
+    - debian-9-x64
+    - debian-10-x64
+    - ubuntu-20-04-x64
+    - ubuntu-19-10-x64
+  red_hat:
+    - centos-7-x64
+    - centos-8-x64
+    - fedora-31-x64
+    - fedora-32-x64
+
+regiones: [nyc1,nyc3,ams3,sfo2,sfo3]
+
+droplets:
+    - name: centos-nyc-dockernode-01
+      id: 1
+      distro: '{{OS_availables.red_hat[0]}}'
+      region: '{{regiones[0]}}'
+      tamanio: '{{tamanios[0]}}'
+
+    - name: centos-nyc-dockernode-02
+      id: 2
+      distro: '{{OS_availables.red_hat[1]}}'
+      region: '{{regiones[1]}}'
+      tamanio: '{{tamanios[1]}}'
+
+    - name: debian-nyc-dockernode-03 
+      id: 3
+      distro: '{{OS_availables.deb[0]}}'
+      region: '{{regiones[3]}}'
+      tamanio: '{{tamanios[2]}}'
